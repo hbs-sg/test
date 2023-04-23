@@ -12,7 +12,7 @@ pipeline {
         stage('Build docker image') {
             steps {
                 sh '''
-                    docker build -t juliaboykowa/jenkins:latest .
+                    docker build -t html/jenkins:latest .
                 '''
             }
         }
@@ -20,7 +20,7 @@ pipeline {
             steps{
                 withDockerRegistry(credentialsId: 'DockerHub', url: 'https://index.docker.io/v1/') {
                     sh '''
-                        docker push juliaboykowa/jenkins:latest
+                        docker push hbsg/jenkins:latest
                     '''
                 }
             }
@@ -28,7 +28,7 @@ pipeline {
         stage('Docker delete local image') {
             steps {
                 sh '''
-                    docker rmi juliaboykowa/jenkins:latest
+                    docker rmi html/jenkins:latest
                 '''
             }
         }
