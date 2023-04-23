@@ -9,28 +9,5 @@ pipeline {
                 '''
             }
         }
-        stage('Build docker image') {
-            steps {
-                sh '''
-                    docker build -t html/jenkins:latest .
-                '''
-            }
-        }
-        stage('Push docker image to DockerHub') {
-            steps{
-                withDockerRegistry(credentialsId: 'DockerHub', url: 'https://index.docker.io/v1/') {
-                    sh '''
-                        docker push hbsg/jenkins:latest
-                    '''
-                }
-            }
-        }
-        stage('Docker delete local image') {
-            steps {
-                sh '''
-                    docker rmi html/jenkins:latest
-                '''
-            }
-        }
     }
 }
