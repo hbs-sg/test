@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('hbsg-dockerhub')
+    }
     stages {
         stage('Docker version') {
             steps {
@@ -9,28 +12,25 @@ pipeline {
                 '''
             }
         }
-        stage('Build docker image') {
+        stage('Build') {
             steps {
-                sh '''
-                    docker build -t hbsg/html:latest .
-                '''
+                sh 'docker build -t hbsg/html:latest .'
             }
         }
-        stage('Push docker image to DockerHub') {
+        stage('Login') {
             steps{
-                withDockerRegistry(credentialsId: 'DockerHub', url: 'https://index.docker.io/v1/') {
-                    sh '''
-                        docker push hbsg/html:latest
-                    '''
-                }
+                sh 'echo $DOCKERHUB_CREDENTIALS_PW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
-        stage('Docker delete local image') {
-            steps {
-                sh '''
-                    docker rmi hbsg/html:latest
-                '''
+        stage('Push'){
+            steps{
+                sh 'docker push hbsg/html:latest'
             }
+        }
+    }
+    post {
+        always {
+            sh 'docker logout'
         }
     }
 }
